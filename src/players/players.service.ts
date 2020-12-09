@@ -8,6 +8,10 @@ export class PlayersService {
   private readonly logger = new Logger(PlayersService.name);
   private readonly players: Player[] = [];
 
+  async getPlayers(): Promise<Player[]> {
+    return this.players;
+  }
+
   async createPlayer(createPlayerDTO: CreatePlayerDTO): Promise<Player> {
     return this.create(createPlayerDTO);
   }
