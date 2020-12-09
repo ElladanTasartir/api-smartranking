@@ -16,6 +16,6 @@ export class PlayersController {
   async createPlayer(
     @Body() createPlayerDTO: CreatePlayerDTO,
   ): Promise<Player> {
-    return this.playersService.createPlayer(createPlayerDTO);
+    return this.playersService.createOrUpdatePlayer(createPlayerDTO);
   }
 }

@@ -12,7 +12,17 @@ export class PlayersService {
     return this.players;
   }
 
-  async createPlayer(createPlayerDTO: CreatePlayerDTO): Promise<Player> {
+  async createOrUpdatePlayer(
+    createPlayerDTO: CreatePlayerDTO,
+  ): Promise<Player> {
+    const { email } = createPlayerDTO;
+
+    const player = this.players.find((player) => player.email === email);
+
+    if (player) {
+      return this.update(player, createPlayerDTO);
+    }
+
     return this.create(createPlayerDTO);
   }
 
@@ -31,6 +41,14 @@ export class PlayersService {
     this.logger.log(`createPlayerDTO: ${JSON.stringify(player)}`);
 
     this.players.push(player);
+    return player;
+  }
+
+  private update(player: Player, createPlayerDTO: CreatePlayerDTO): Player {
+    const { name } = createPlayerDTO;
+
+    player.name = name;
+
     return player;
   }
 }
