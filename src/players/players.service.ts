@@ -65,4 +65,10 @@ export class PlayersService {
 
     return player;
   }
+
+  async deletePlayer(id: string): Promise<void> {
+    const playerIndex = this.players.findIndex((player) => player._id === id);
+    this.logger.warn(`Deleting player with id "${id}"`);
+    this.players.splice(playerIndex, 1);
+  }
 }
