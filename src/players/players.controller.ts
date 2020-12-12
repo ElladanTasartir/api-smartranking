@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreatePlayerDTO } from './dtos/create-player.dto';
-import { Player } from './interfaces/player.inteface';
+import { Player } from './interfaces/player.interface';
 import { PlayersService } from './players.service';
 
 @Controller('api/v1/players')
