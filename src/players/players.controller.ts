@@ -29,8 +29,8 @@ export class PlayersController {
   }
 
   @HttpCode(204)
-  @Delete('/:id')
-  async deletePlayer(@Param('id') id: string): Promise<void> {
-    await this.playersService.deletePlayer(id);
+  @Delete('/:email')
+  async deletePlayer(@Param('email') email: string): Promise<void> {
+    await this.playersService.deletePlayer(email);
   }
 }
