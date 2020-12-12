@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
@@ -14,11 +19,7 @@ export class PlayersService {
     private readonly playerModel: Model<Player>,
   ) {}
 
-  async getPlayers(email: string): Promise<Player[] | Player> {
-    if (email) {
-      return this.getPlayerByEmail(email);
-    }
-
+  async getPlayers(): Promise<Player[]> {
     return this.playerModel.find();
   }
 
@@ -37,16 +38,14 @@ export class PlayersService {
   ): Promise<Player> {
     const { email } = createPlayerDTO;
 
-    const player = await this.playerModel.findOne({ email });
+    const foundPlayer = await this.playerModel.findOne({ email });
 
-    if (player) {
-      return this.update(createPlayerDTO);
+    if (foundPlayer) {
+      throw new BadRequestException(
+        `Player with the email "${email}" already exists`,
+      );
     }
 
-    return this.create(createPlayerDTO);
-  }
-
-  private async create(createPlayerDTO: CreatePlayerDTO): Promise<Player> {
     const player = new this.playerModel(createPlayerDTO);
 
     this.logger.log(`createPlayerDTO: ${JSON.stringify(player)}`);
@@ -54,12 +53,21 @@ export class PlayersService {
     return player.save();
   }
 
-  private async update(editPlayerDTO: EditPlayerDTO): Promise<Player> {
-    return this.playerModel.findOneAndUpdate(
-      { email: editPlayerDTO.email },
-      { $set: editPlayerDTO },
-      { new: true },
-    );
+  async updatePlayer(
+    email: string,
+    editPlayerDTO: EditPlayerDTO,
+  ): Promise<Player> {
+    try {
+      return this.playerModel.findOneAndUpdate(
+        { email: email },
+        { $set: editPlayerDTO },
+        { new: true },
+      );
+    } catch {
+      throw new BadRequestException(
+        `Couldn't update user with email "${email}"`,
+      );
+    }
   }
 
   async deletePlayer(email: string): Promise<void> {
