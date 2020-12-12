@@ -1,5 +1,10 @@
+import { IsOptional, IsPhoneNumber } from 'class-validator';
+
 export class EditPlayerDTO {
+  @IsOptional()
+  @IsPhoneNumber('BR')
   phoneNumber: string;
-  email: string;
+
+  @IsOptional()
   name: string;
 }
