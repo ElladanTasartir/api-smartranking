@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { EditPlayerDTO } from './dtos/edit-player.dto';
+import { FindParamDTO } from './dtos/find-param.dto';
 import { Player } from './interfaces/player.interface';
 import { PlayersService } from './players.service';
 
@@ -25,8 +26,11 @@ export class PlayersController {
   }
 
   @Get('/:email')
-  async getPlayersByEmail(@Param('email') email: string): Promise<Player> {
-    return this.playersService.getPlayerByEmail(email);
+  @UsePipes(ValidationPipe)
+  async getPlayersByEmail(
+    @Param() findParamDTO: FindParamDTO,
+  ): Promise<Player> {
+    return this.playersService.getPlayerByEmail(findParamDTO);
   }
 
   @Post()
@@ -40,15 +44,16 @@ export class PlayersController {
   @Put('/:email')
   @UsePipes(ValidationPipe)
   async updatePlayer(
-    @Param('email') email: string,
+    @Param() findParamDTO: FindParamDTO,
     @Body() editPlayerDTO: EditPlayerDTO,
   ): Promise<Player> {
-    return this.playersService.updatePlayer(email, editPlayerDTO);
+    return this.playersService.updatePlayer(findParamDTO, editPlayerDTO);
   }
 
   @HttpCode(204)
+  @UsePipes(ValidationPipe)
   @Delete('/:email')
-  async deletePlayer(@Param('email') email: string): Promise<void> {
-    await this.playersService.deletePlayer(email);
+  async deletePlayer(@Param() findParamDTO: FindParamDTO): Promise<void> {
+    await this.playersService.deletePlayer(findParamDTO);
   }
 }

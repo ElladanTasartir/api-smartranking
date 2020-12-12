@@ -9,6 +9,7 @@ import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
 import { Model } from 'mongoose';
 import { EditPlayerDTO } from './dtos/edit-player.dto';
+import { FindParamDTO } from './dtos/find-param.dto';
 
 @Injectable()
 export class PlayersService {
@@ -23,7 +24,9 @@ export class PlayersService {
     return this.playerModel.find();
   }
 
-  async getPlayerByEmail(email: string): Promise<Player> {
+  async getPlayerByEmail(findParamDTO: FindParamDTO): Promise<Player> {
+    const { email } = findParamDTO;
+
     const player = await this.playerModel.findOne({ email });
 
     if (!player) {
@@ -54,12 +57,14 @@ export class PlayersService {
   }
 
   async updatePlayer(
-    email: string,
+    findParamDTO: FindParamDTO,
     editPlayerDTO: EditPlayerDTO,
   ): Promise<Player> {
+    const { email } = findParamDTO;
+
     try {
       return this.playerModel.findOneAndUpdate(
-        { email: email },
+        { email },
         { $set: editPlayerDTO },
         { new: true },
       );
@@ -70,8 +75,8 @@ export class PlayersService {
     }
   }
 
-  async deletePlayer(email: string): Promise<void> {
-    const player = await this.getPlayerByEmail(email);
+  async deletePlayer(findParamDTO: FindParamDTO): Promise<void> {
+    const player = await this.getPlayerByEmail(findParamDTO);
 
     await player.remove();
   }
