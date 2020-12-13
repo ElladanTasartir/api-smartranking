@@ -25,12 +25,10 @@ export class PlayersController {
     return this.playersService.getPlayers();
   }
 
-  @Get('/:email')
+  @Get('/:_id')
   @UsePipes(ValidationPipe)
-  async getPlayersByEmail(
-    @Param() findParamDTO: FindParamDTO,
-  ): Promise<Player> {
-    return this.playersService.getPlayerByEmail(findParamDTO);
+  async getPlayerById(@Param() findParamDTO: FindParamDTO): Promise<Player> {
+    return this.playersService.getPlayerById(findParamDTO);
   }
 
   @Post()
@@ -38,10 +36,10 @@ export class PlayersController {
   async createPlayer(
     @Body() createPlayerDTO: CreatePlayerDTO,
   ): Promise<Player> {
-    return this.playersService.createOrUpdatePlayer(createPlayerDTO);
+    return this.playersService.createPlayer(createPlayerDTO);
   }
 
-  @Put('/:email')
+  @Put('/:_id')
   @UsePipes(ValidationPipe)
   async updatePlayer(
     @Param() findParamDTO: FindParamDTO,
@@ -52,7 +50,7 @@ export class PlayersController {
 
   @HttpCode(204)
   @UsePipes(ValidationPipe)
-  @Delete('/:email')
+  @Delete('/:_id')
   async deletePlayer(@Param() findParamDTO: FindParamDTO): Promise<void> {
     await this.playersService.deletePlayer(findParamDTO);
   }
