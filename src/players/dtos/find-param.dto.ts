@@ -1,6 +1,6 @@
-import { IsEmail } from 'class-validator';
+import { IsMongoId } from 'class-validator';
 
 export class FindParamDTO {
-  @IsEmail()
-  email: string;
+  @IsMongoId()
+  _id: string;
 }
