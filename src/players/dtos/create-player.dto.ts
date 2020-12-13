@@ -9,5 +9,5 @@ export class CreatePlayerDTO {
   readonly email: string;
 
   @IsNotEmpty()
-  name: string;
+  readonly name: string;
 }
