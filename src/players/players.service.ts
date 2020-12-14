@@ -9,7 +9,7 @@ import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { Player } from './interfaces/player.interface';
 import { Model } from 'mongoose';
 import { EditPlayerDTO } from './dtos/edit-player.dto';
-import { FindParamDTO } from './dtos/find-param.dto';
+import { FindParamDTO } from '../shared/dtos/find-param.dto';
 
 @Injectable()
 export class PlayersService {

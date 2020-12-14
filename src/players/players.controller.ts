@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreatePlayerDTO } from './dtos/create-player.dto';
 import { EditPlayerDTO } from './dtos/edit-player.dto';
-import { FindParamDTO } from './dtos/find-param.dto';
+import { FindParamDTO } from '../shared/dtos/find-param.dto';
 import { Player } from './interfaces/player.interface';
 import { PlayersService } from './players.service';
 
