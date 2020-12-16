@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { FindParamDTO } from '../shared/dtos/find-param.dto';
+import { FindParamDTO } from '../common/dtos/find-param.dto';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDTO } from './dtos/create-category.dto';
 import { InsertPlayerInCategoryDTO } from './dtos/insert-player-category.dto';
