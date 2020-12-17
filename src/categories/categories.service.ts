@@ -36,6 +36,25 @@ export class CategoriesService {
     return category;
   }
 
+  async getCategoryByPlayerId(findParamDTO: FindParamDTO): Promise<Category> {
+    const { _id } = findParamDTO;
+
+    const player = await this.playersService.getPlayerById({ _id });
+
+    const playerInCategory = await this.categoryModel
+      .findOne()
+      .where('players')
+      .in([player]);
+
+    if (!playerInCategory) {
+      throw new BadRequestException(
+        `Player with ID "${_id}" isn't in any category`,
+      );
+    }
+
+    return playerInCategory;
+  }
+
   async createCategory(
     createCategoryDTO: CreateCategoryDTO,
   ): Promise<Category> {
@@ -104,24 +123,5 @@ export class CategoriesService {
         new: true,
       },
     );
-  }
-
-  async getCategoryByUserId(findParamDTO: FindParamDTO): Promise<Category> {
-    const { _id } = findParamDTO;
-
-    const player = await this.playersService.getPlayerById({ _id });
-
-    const playerInCategory = await this.categoryModel
-      .findOne()
-      .where('players')
-      .in([player]);
-
-    if (!playerInCategory) {
-      throw new BadRequestException(
-        `Player with ID "${_id}" isn't in any category`,
-      );
-    }
-
-    return playerInCategory;
   }
 }

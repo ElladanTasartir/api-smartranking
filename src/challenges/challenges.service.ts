@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CategoriesService } from 'src/categories/categories.service';
 import { PlayersService } from 'src/players/players.service';
 import { CreateChallengeDTO } from './dtos/create-challenge.dto';
+import { FindChallengeByPlayerDTO } from './dtos/find-challenge-by-player.dto';
 import { ChallengeStatus } from './enums/challenge-status.enum';
 import { Challenge } from './interfaces/challenge.interface';
 
@@ -17,6 +18,32 @@ export class ChallengesService {
     private readonly playersService: PlayersService,
     private readonly categoriesService: CategoriesService,
   ) {}
+
+  async getChallenges(
+    findChallengeByPlayerDTO: FindChallengeByPlayerDTO,
+  ): Promise<Challenge[]> {
+    if (findChallengeByPlayerDTO._id) {
+      return this.getChallengesByPlayerId(findChallengeByPlayerDTO);
+    }
+
+    return this.challengeModel
+      .find()
+      .populate(['players', 'challenger', 'match']);
+  }
+
+  async getChallengesByPlayerId(
+    findChallengeByPlayerDTO: FindChallengeByPlayerDTO,
+  ): Promise<Challenge[]> {
+    const player = await this.playersService.getPlayerById(
+      findChallengeByPlayerDTO,
+    );
+
+    return this.challengeModel
+      .find()
+      .where('players')
+      .in([player])
+      .populate(['players', 'challenger', 'match']);
+  }
 
   async createChallenge(
     createChallengeDTO: CreateChallengeDTO,
@@ -39,7 +66,7 @@ export class ChallengesService {
       );
     }
 
-    const { category } = await this.categoriesService.getCategoryByUserId({
+    const { category } = await this.categoriesService.getCategoryByPlayerId({
       _id: challenger,
     });
 
