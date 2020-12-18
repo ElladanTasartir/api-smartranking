@@ -6,8 +6,6 @@ export class ChallengeStatusPipe implements PipeTransform {
   readonly allowedStatuses = [
     ChallengeStatus.ACCEPTED,
     ChallengeStatus.CANCELLED,
-    ChallengeStatus.FINISHED,
-    ChallengeStatus.PENDING,
     ChallengeStatus.REJECTED,
   ];
 
