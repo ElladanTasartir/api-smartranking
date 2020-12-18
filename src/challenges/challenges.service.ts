@@ -109,6 +109,10 @@ export class ChallengesService {
 
     const foundChallenge = await this.getChallengeById(findParamDTO);
 
+    if (status) {
+      foundChallenge.answered_at = new Date();
+    }
+
     foundChallenge.status = status;
     foundChallenge.date = date;
 
