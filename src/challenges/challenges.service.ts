@@ -1,10 +1,17 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CategoriesService } from 'src/categories/categories.service';
+import { FindParamDTO } from 'src/common/dtos/find-param.dto';
 import { PlayersService } from 'src/players/players.service';
 import { CreateChallengeDTO } from './dtos/create-challenge.dto';
 import { FindChallengeByPlayerDTO } from './dtos/find-challenge-by-player.dto';
+import { UpdateChallengeDTO } from './dtos/update-challenge.dto';
 import { ChallengeStatus } from './enums/challenge-status.enum';
 import { Challenge } from './interfaces/challenge.interface';
 
@@ -45,6 +52,20 @@ export class ChallengesService {
       .populate(['players', 'challenger', 'match']);
   }
 
+  async getChallengeById(findParamDTO: FindParamDTO): Promise<Challenge> {
+    const { _id } = findParamDTO;
+
+    const challenge = await this.challengeModel
+      .findOne({ _id })
+      .populate(['players', 'challenger', 'match']);
+
+    if (!challenge) {
+      throw new NotFoundException(`Challenge with ID "${_id}" does not exist`);
+    }
+
+    return challenge;
+  }
+
   async createChallenge(
     createChallengeDTO: CreateChallengeDTO,
   ): Promise<Challenge> {
@@ -78,5 +99,19 @@ export class ChallengesService {
     this.logger.log(`Created Challenge: ${JSON.stringify(createdChallenge)}`);
 
     return createdChallenge.save();
+  }
+
+  async updateChallenge(
+    findParamDTO: FindParamDTO,
+    updateChallengeDTO: UpdateChallengeDTO,
+  ): Promise<Challenge> {
+    const { date, status } = updateChallengeDTO;
+
+    const foundChallenge = await this.getChallengeById(findParamDTO);
+
+    foundChallenge.status = status;
+    foundChallenge.date = date;
+
+    return foundChallenge.save();
   }
 }
