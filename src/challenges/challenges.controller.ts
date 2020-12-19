@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -13,6 +15,7 @@ import { FindParamDTO } from 'src/common/dtos/find-param.dto';
 import { ChallengesService } from './challenges.service';
 import { CreateChallengeDTO } from './dtos/create-challenge.dto';
 import { FindChallengeByPlayerDTO } from './dtos/find-challenge-by-player.dto';
+import { insertMatchDTO } from './dtos/insert-match.dto';
 import { UpdateChallengeDTO } from './dtos/update-challenge.dto';
 import { Challenge } from './interfaces/challenge.interface';
 import { ChallengeStatusPipe } from './pipes/challenge-status.pipe';
@@ -37,6 +40,15 @@ export class ChallengesController {
     return this.challengesService.createChallenge(createChallengeDTO);
   }
 
+  @Post('/:_id/match')
+  @UsePipes(ValidationPipe)
+  async insertMatch(
+    @Param() findParamDTO: FindParamDTO,
+    @Body() insertMatchDTO: insertMatchDTO,
+  ): Promise<Challenge> {
+    return this.challengesService.insertMatch(findParamDTO, insertMatchDTO);
+  }
+
   @Put('/:_id')
   @UsePipes(ValidationPipe)
   async updateChallenge(
@@ -47,5 +59,12 @@ export class ChallengesController {
       findParamDTO,
       updateChallengeDTO,
     );
+  }
+
+  @HttpCode(204)
+  @Delete('/:_id')
+  @UsePipes(ValidationPipe)
+  async deleteChallenge(@Param() findParamDTO: FindParamDTO): Promise<void> {
+    return this.challengesService.deleteChallenge(findParamDTO);
   }
 }

@@ -11,9 +11,10 @@ import { FindParamDTO } from 'src/common/dtos/find-param.dto';
 import { PlayersService } from 'src/players/players.service';
 import { CreateChallengeDTO } from './dtos/create-challenge.dto';
 import { FindChallengeByPlayerDTO } from './dtos/find-challenge-by-player.dto';
+import { insertMatchDTO } from './dtos/insert-match.dto';
 import { UpdateChallengeDTO } from './dtos/update-challenge.dto';
 import { ChallengeStatus } from './enums/challenge-status.enum';
-import { Challenge } from './interfaces/challenge.interface';
+import { Challenge, Match } from './interfaces/challenge.interface';
 
 @Injectable()
 export class ChallengesService {
@@ -22,6 +23,8 @@ export class ChallengesService {
   constructor(
     @InjectModel('Challenge')
     private readonly challengeModel: Model<Challenge>,
+    @InjectModel('Match')
+    private readonly matchModel: Model<Match>,
     private readonly playersService: PlayersService,
     private readonly categoriesService: CategoriesService,
   ) {}
@@ -101,6 +104,37 @@ export class ChallengesService {
     return createdChallenge.save();
   }
 
+  async insertMatch(
+    findParamDTO: FindParamDTO,
+    insertMatchDTO: insertMatchDTO,
+  ): Promise<Challenge> {
+    const { def } = insertMatchDTO;
+
+    const challenge = await this.getChallengeById(findParamDTO);
+
+    const playerIsInTheChallenge = challenge.players.filter(
+      (player) => String(player._id) === def,
+    );
+
+    if (!playerIsInTheChallenge.length) {
+      throw new BadRequestException(`Player ${def} is not in the challenge`);
+    }
+
+    const match = new this.matchModel(insertMatchDTO);
+
+    match.category = challenge.category;
+    match.players = challenge.players;
+
+    await match.save();
+
+    challenge.status = ChallengeStatus.FINISHED;
+    challenge.match = match._id;
+
+    await challenge.save();
+
+    return challenge.populate('match').execPopulate();
+  }
+
   async updateChallenge(
     findParamDTO: FindParamDTO,
     updateChallengeDTO: UpdateChallengeDTO,
@@ -117,5 +151,13 @@ export class ChallengesService {
     foundChallenge.date = date;
 
     return foundChallenge.save();
+  }
+
+  async deleteChallenge(findParamDTO: FindParamDTO): Promise<void> {
+    const challenge = await this.getChallengeById(findParamDTO);
+
+    challenge.status = ChallengeStatus.CANCELLED;
+
+    await challenge.save();
   }
 }
